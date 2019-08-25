@@ -12,7 +12,8 @@ import {
   TouchableOpacity,
   Animated,
   Dimensions,
-  Image
+  Image,
+  SafeAreaView
 } from 'react-native'
 
 let windowWidth = Dimensions.get('window').width
@@ -71,7 +72,6 @@ class MessageBar extends Component {
       /* Cusomisation of the alert: Title, Message, Icon URL, Alert alertType (error, success, warning, info), Duration for Alert keep shown */
       title: props.title,
       message: props.message,
-      children: props.children,
       avatar: props.avatar,
       alertType: props.alertType || 'info',
       duration: props.duration || def.duration || 3000,
@@ -187,7 +187,7 @@ class MessageBar extends Component {
     // If an alert is already shonw or doesn't have a title or a message, do nothing
     if (
       this.alertShown ||
-      (this.state.title == null && this.state.message == null && this.state.children == null)
+      (this.state.title == null && this.state.message == null)
     ) {
       return
     }
@@ -454,32 +454,34 @@ class MessageBar extends Component {
           paddingLeft: this.state.viewLeftInset,
           paddingRight: this.state.viewRightInset
         }}>
-        <TouchableOpacity
-          onPress={() => {
-            this._alertTapped()
-          }}
-          style={{ flex: 1 }}>
-          <View
-            style={{
-              flex: 1,
-              flexDirection: 'row',
-              alignItems: 'flex-end',
-              padding: this.state.messageBarPadding
-            }}>
-            {this.renderImage()}
+        <SafeAreaView style={{ flex: 1 }}>
+          <TouchableOpacity
+            onPress={() => {
+              this._alertTapped()
+            }}
+            style={{ flex: 1 }}>
             <View
               style={{
                 flex: 1,
-                flexDirection: 'column',
-                alignSelf: 'stretch',
-                justifyContent: 'center',
-                marginLeft: 10
+                flexDirection: 'row',
+                alignItems: 'flex-end',
+                padding: this.state.messageBarPadding
               }}>
-              {this.renderTitle()}
-              {this.renderMessage()}
+              {this.renderImage()}
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'column',
+                  alignSelf: 'stretch',
+                  justifyContent: 'center',
+                  marginLeft: 10
+                }}>
+                {this.renderTitle()}
+                {this.renderMessage()}
+              </View>
             </View>
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
+        </SafeAreaView>
       </Animated.View>
     )
   }
@@ -519,23 +521,15 @@ class MessageBar extends Component {
   }
 
   renderMessage () {
-    var controls = [];
     if (this.state.message != null) {
-      controls.push(
+      return (
         <Text
-          key="message"
           numberOfLines={this.state.messageNumberOfLines}
           style={[this.state.messageStyle, {color: this.state.messageColor}]}>
           {this.state.message}
         </Text>
       )
     }
-    if (this.state.children != null) {
-      controls.push(
-          this.state.children
-      );
-    }
-    return controls;
   }
 }
 
